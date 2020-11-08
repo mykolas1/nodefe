@@ -1,7 +1,7 @@
 import httpClient from "./httpClient";
 
-const EXPRESS_BASE_URL = "http://localhost:5000";
-// const EXPRESS_BASE_URL = "https://expressazure.azurewebsites.net";
+// const EXPRESS_BASE_URL = "http://localhost:5000";
+const EXPRESS_BASE_URL = "https://expressazure.azurewebsites.net";
 
 const EMP_GET_URL = "/employees";
 const EMP_INSERT_URL = "/employee";
