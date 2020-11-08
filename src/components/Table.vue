@@ -48,8 +48,9 @@
         <b-field label="Salary:">
           <b-input v-model="salary"></b-input>
         </b-field>
-        <b-button v-if="update" @click="updatePerson" type="is-success">Update</b-button>
-        <b-button v-if="insert" @click="insertEmp" type="is-success">Insert</b-button>
+        <b-button v-if="update && !insert" @click="updatePerson" type="is-success">Update</b-button>
+        <b-button v-if="insert && !update" @click="insertEmp" type="is-success">Insert</b-button>
+        <b-button v-if="insert || update" @click="cancelAll" type="is-error">Cancel</b-button>
       </section>
     </div>
   </div>
@@ -103,6 +104,13 @@
     }
   },
   methods: {
+    cancelAll: function () {
+      this.insert = false;
+      this.update = false;
+      this.name = null;
+      this.empCode = null;
+      this.salary = null;
+    },
      deleteEmp: async function () {
       console.log("delete");
       console.log(this.selected);
