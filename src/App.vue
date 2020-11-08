@@ -1,15 +1,5 @@
 <template>
   <div id="app">
-    <b-navbar>
-      <template slot="start">
-        <b-navbar-item href="/home">
-          Table
-        </b-navbar-item>
-        <b-navbar-item href="/form">
-          Form
-        </b-navbar-item>
-      </template>
-    </b-navbar>
     <Table/>
   </div>
 </template>
