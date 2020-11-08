@@ -5,9 +5,9 @@
         <b-navbar-item href="/home">
           Table
         </b-navbar-item>
-        <b-navbar-item href="/form">
-          Form
-        </b-navbar-item>
+<!--        <b-navbar-item href="/form">-->
+<!--          Form-->
+<!--        </b-navbar-item>-->
       </template>
 
     </b-navbar>
@@ -32,7 +32,11 @@
         <b-icon icon="close"></b-icon>
         <span>Update employee</span>
       </button>
-      <section class="container" v-if="this.update">
+      <button class="button field is-success" @click="ii()">
+        <b-icon icon="close"></b-icon>
+        <span>Insert employee</span>
+      </button>
+      <section class="container" v-if="this.update || this.insert">
         <b-field label="Name:">
           <b-input v-model="name"></b-input>
         </b-field>
@@ -44,14 +48,15 @@
         <b-field label="Salary:">
           <b-input v-model="salary"></b-input>
         </b-field>
-        <b-button @click="updatePerson" type="is-success">Update</b-button>
+        <b-button v-if="update" @click="updatePerson" type="is-success">Update</b-button>
+        <b-button v-if="insert" @click="insertEmp" type="is-success">Insert</b-button>
       </section>
     </div>
   </div>
 </template>
 
 <script>
-  import { deleteEmployee, getAllEmployees, updateEmployee } from "../httpClient/api";
+  import { deleteEmployee, getAllEmployees, updateEmployee, saveEmployee } from "../httpClient/api";
   export default {
   name: 'Table',
     data() {
@@ -60,6 +65,7 @@
       empCode: null,
       salary: null,
       update: false,
+      insert: false,
       selected: null,
       data: [
         { 'id': 'Jesse', 'name': 'Simmons', 'empCode': 'Simmons', 'salary': 'Simmons' }
@@ -126,6 +132,51 @@
       this.name = this.selected.Name;
       this.empCode = this.selected.EmpCode;
       this.salary = this.selected.Salary;
+    },
+    ii: function () {
+      this.insert = true;
+    },
+    insertEmp: async function () {
+      let payload = {
+        name: this.name,
+        empCode: this.empCode,
+        salary: this.salary,
+      };
+      await saveEmployee(payload).then(()=> {
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Employee added successfully!',
+          type: 'is-success'
+        });
+
+        console.log(this.employees);
+        let tempEmp = {
+          Name: this.name,
+          EmpCode: this.empCode,
+          Salary: this.salary
+        };
+        this.employees.push(tempEmp);
+
+        this.selected = null;
+        this.insert = false;
+
+        this.name = null;
+        this.empCode = null;
+        this.salary = null;
+      }).catch((err)=> {
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: `Something's not good. ` + err,
+          position: 'is-bottom',
+          type: 'is-danger'
+        })
+        this.selected = null;
+
+        this.name = null;
+        this.empCode = null;
+        this.salary = null;
+      });
+      this.employees = (await getAllEmployees()).data;
     },
     updatePerson: async function () {
       let payload = {
