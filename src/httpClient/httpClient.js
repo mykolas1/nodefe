@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const httpClient = axios.create({
-    timeout: 10000
+    timeout: 50000
 });
 
 export default httpClient;
