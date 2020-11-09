@@ -143,7 +143,7 @@
       if (this.empCode.includes("-")) {
         return true;
       } else {
-        alert("EmpCode should has dash.")
+        alert("EmpCode should has dash.");
         return false;
       }
     },
@@ -184,7 +184,7 @@
         empCode: this.empCode,
         salary: this.salary,
       };
-      if(this.validateInputs() && this.numberValidation() && this.hasDash()) {
+      if(Number.isInteger(this.selected.EmpID) && this.validateInputs() && this.numberValidation() && this.hasDash()) {
         await saveEmployee(payload).then(()=> {
           this.$buefy.toast.open({
             duration: 5000,
@@ -229,14 +229,13 @@
         salary: this.salary,
         id: this.selected.EmpID
       };
-      if(this.validateInputs() && this.numberValidation() && this.hasDash()) {
+      if(Number.isInteger(this.selected.EmpID) && this.validateInputs() && this.numberValidation() && this.hasDash()) {
         await updateEmployee(payload).then(()=> {
           this.$buefy.toast.open({
             duration: 5000,
             message: 'Employee updated successfully!',
             type: 'is-success'
           });
-          console.log("HAAAAA");
 
           this.employees = this.employees.filter(x=> {
             return x.EmpID !== this.selected.EmpID;
