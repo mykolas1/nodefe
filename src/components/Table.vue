@@ -140,8 +140,28 @@
       });
     },
     hasDash: function() {
+      var charIndex = null;
+      for (let i = 0; i<= this.empCode.length; i++) {
+        if ('-' === this.empCode[i]) {
+          charIndex = i;
+        }
+      }
       if (this.empCode.includes("-")) {
-        return true;
+        var front = this.empCode.substring(0, charIndex);
+        var back = this.empCode.substring(charIndex + 1, this.empCode.length);
+        console.log("front");
+        console.log(front);
+        console.log("back");
+        console.log(back);
+
+        if (this.validateInputs(front)) {
+          return true;
+        } else {
+          console.log(this.validateInputs(front));
+          console.log(Number.isInteger(back));
+          alert("EmpCode bad format.");
+          return false;
+        }
       } else {
         alert("EmpCode should has dash.");
         return false;
@@ -184,7 +204,7 @@
         empCode: this.empCode,
         salary: this.salary,
       };
-      if(Number.isInteger(this.selected.EmpID) && this.validateInputs() && this.numberValidation() && this.hasDash()) {
+      if(this.validateInputs() && this.numberValidation() && this.hasDash()) {
         await saveEmployee(payload).then(()=> {
           this.$buefy.toast.open({
             duration: 5000,
