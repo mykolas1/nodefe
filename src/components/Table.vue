@@ -14,7 +14,7 @@
     <div class="container">
 
       <b-table :data="this.employees"
-               :columns="columns"
+               :columns="this.columns"
                :selected.sync="selected">
       </b-table>
       <button class="button field is-success" @click="selected = null"
@@ -68,6 +68,7 @@
       update: false,
       insert: false,
       selected: null,
+      isNew: Boolean,
       data: [
         { 'id': 'Jesse', 'name': 'Simmons', 'empCode': 'Simmons', 'salary': 'Simmons' }
       ],
@@ -83,6 +84,9 @@
         },
         {
           field: 'Salary',
+        },
+        {
+          field: 'Is new',
         }
       ],
       computed: {
@@ -135,6 +139,36 @@
         })
       });
     },
+    hasDash: function() {
+      if (this.empCode.includes("-")) {
+        return true;
+      } else {
+        alert("EmpCode should has dash.")
+        return false;
+      }
+    },
+    numberValidation:  function() {
+    var n = this.salary;
+    if (typeof n == 'number' && !isNaN(n) && isFinite(n)) {
+      alert("Salary shuold be numeric.");
+      return false;
+    } else {
+      return true;
+    }
+  },
+  validateInputs: function () {
+      console.log('validateInputs');
+      var letters = /^[A-Za-z]+$/;
+      if(this.name.match(letters))
+      {
+        return true;
+      }
+      else
+      {
+        alert("Bad Employee Name.");
+        return false;
+      }
+    },
     updateEmp: function () {
       this.update = true;
       this.name = this.selected.Name;
@@ -150,41 +184,43 @@
         empCode: this.empCode,
         salary: this.salary,
       };
-      await saveEmployee(payload).then(()=> {
-        this.$buefy.toast.open({
-          duration: 5000,
-          message: 'Employee added successfully!',
-          type: 'is-success'
+      if(this.validateInputs() && this.numberValidation() && this.hasDash()) {
+        await saveEmployee(payload).then(()=> {
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: 'Employee added successfully!',
+            type: 'is-success'
+          });
+
+          console.log(this.employees);
+          let tempEmp = {
+            Name: this.name,
+            EmpCode: this.empCode,
+            Salary: this.salary
+          };
+          this.employees.push(tempEmp);
+
+          this.selected = null;
+          this.insert = false;
+
+          this.name = null;
+          this.empCode = null;
+          this.salary = null;
+        }).catch((err)=> {
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: `Something's not good. ` + err,
+            position: 'is-bottom',
+            type: 'is-danger'
+          })
+          this.selected = null;
+
+          this.name = null;
+          this.empCode = null;
+          this.salary = null;
         });
-
-        console.log(this.employees);
-        let tempEmp = {
-          Name: this.name,
-          EmpCode: this.empCode,
-          Salary: this.salary
-        };
-        this.employees.push(tempEmp);
-
-        this.selected = null;
-        this.insert = false;
-
-        this.name = null;
-        this.empCode = null;
-        this.salary = null;
-      }).catch((err)=> {
-        this.$buefy.toast.open({
-          duration: 5000,
-          message: `Something's not good. ` + err,
-          position: 'is-bottom',
-          type: 'is-danger'
-        })
-        this.selected = null;
-
-        this.name = null;
-        this.empCode = null;
-        this.salary = null;
-      });
-      this.employees = (await getAllEmployees()).data;
+        this.employees = (await getAllEmployees()).data;
+      }
     },
     updatePerson: async function () {
       let payload = {
@@ -193,48 +229,50 @@
         salary: this.salary,
         id: this.selected.EmpID
       };
-      await updateEmployee(payload).then(()=> {
-        this.$buefy.toast.open({
-          duration: 5000,
-          message: 'Employee updated successfully!',
-          type: 'is-success'
+      if(this.validateInputs() && this.numberValidation() && this.hasDash()) {
+        await updateEmployee(payload).then(()=> {
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: 'Employee updated successfully!',
+            type: 'is-success'
+          });
+          console.log("HAAAAA");
+
+          this.employees = this.employees.filter(x=> {
+            return x.EmpID !== this.selected.EmpID;
+          });
+          console.log("HAAAAA");
+          console.log(this.employees);
+          let tempEmp = {
+            EmpID: this.selected.EmpID,
+            Name: this.name,
+            EmpCode: this.empCode,
+            Salary: this.salary
+          };
+          this.employees.push(tempEmp);
+
+          this.selected = null;
+          this.update = false;
+
+          this.name = null;
+          this.empCode = null;
+          this.salary = null;
+        }).catch((err)=> {
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: `Something's not good. ` + err,
+            position: 'is-bottom',
+            type: 'is-danger'
+          })
+          this.selected = null;
+          this.update = false;
+
+          this.name = null;
+          this.empCode = null;
+          this.salary = null;
         });
-        console.log("HAAAAA");
-
-        this.employees = this.employees.filter(x=> {
-          return x.EmpID !== this.selected.EmpID;
-        });
-        console.log("HAAAAA");
-        console.log(this.employees);
-        let tempEmp = {
-          EmpID: this.selected.EmpID,
-          Name: this.name,
-          EmpCode: this.empCode,
-          Salary: this.salary
-        };
-        this.employees.push(tempEmp);
-
-        this.selected = null;
-        this.update = false;
-
-        this.name = null;
-        this.empCode = null;
-        this.salary = null;
-      }).catch((err)=> {
-        this.$buefy.toast.open({
-          duration: 5000,
-          message: `Something's not good. ` + err,
-          position: 'is-bottom',
-          type: 'is-danger'
-        })
-        this.selected = null;
-        this.update = false;
-
-        this.name = null;
-        this.empCode = null;
-        this.salary = null;
-      });
-    }
+      }
+      }
   },
   async mounted() {
     this.employees = (await getAllEmployees()).data;
